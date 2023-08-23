@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/showwin/speedtest-go/speedtest"
+	"github.com/romaxa55/speedtest-go/speedtest"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -14,7 +14,6 @@ var (
 	showList      = kingpin.Flag("list", "Show available speedtest.net servers.").Short('l').Bool()
 	serverIds     = kingpin.Flag("server", "Select server id to run speedtest.").Short('s').Ints()
 	customURL     = kingpin.Flag("custom-url", "Specify the url of the server instead of getting a list from speedtest.net.").String()
-	savingMode    = kingpin.Flag("saving-mode", "Test with few resources, though low accuracy (especially > 30Mbps).").Bool()
 	jsonOutput    = kingpin.Flag("json", "Output results in json format.").Bool()
 	location      = kingpin.Flag("location", "Change the location with a precise coordinate. Format: lat,lon").String()
 	city          = kingpin.Flag("city", "Change the location with a predefined city label.").String()
@@ -34,7 +33,6 @@ func main() {
 
 	kingpin.Version(speedtest.Version())
 	kingpin.Parse()
-	AppInfo()
 
 	// 0. speed test setting
 	var speedtestClient = speedtest.New(speedtest.WithUserConfig(
@@ -44,7 +42,7 @@ func main() {
 			Source:       *source,
 			Debug:        *debug,
 			ICMP:         (os.Geteuid() == 0 || os.Geteuid() == -1) && len(*proxy) == 0 && !*forceHTTPPing, // proxy may not support ICMP
-			SavingMode:   *savingMode,
+			SavingMode:   true,
 			CityFlag:     *city,
 			LocationFlag: *location,
 			Keyword:      *search,
@@ -142,12 +140,17 @@ func main() {
 
 	taskManager.Stop()
 
-	if *jsonOutput {
+	if !*jsonOutput {
 		json, errMarshal := speedtestClient.JSON(targets)
 		if errMarshal != nil {
 			return
 		}
-		fmt.Print(string(json))
+		fmt.Println("Saved to /tmp/speedtest.json")
+		// Сохранение в файл
+		err := os.WriteFile("/tmp/speedtest.json", json, 0644)
+		if err != nil {
+			fmt.Println("Ошибка при сохранении в файл:", err)
+		}
 	}
 }
 
@@ -161,13 +164,5 @@ func showServerList(servers speedtest.Servers) {
 			fmt.Printf("%-dms ", s.Latency/time.Millisecond)
 		}
 		fmt.Printf("\t%s (%s) by %s \n", s.Name, s.Country, s.Sponsor)
-	}
-}
-
-func AppInfo() {
-	if !*jsonOutput {
-		fmt.Println()
-		fmt.Printf("    😊 speedtest-go v%s @showwin 😊\n", speedtest.Version())
-		fmt.Println()
 	}
 }

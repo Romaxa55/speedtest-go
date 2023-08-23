@@ -1,4 +1,4 @@
-module github.com/showwin/speedtest-go
+module github.com/romaxa55/speedtest-go
 
 go 1.19
 

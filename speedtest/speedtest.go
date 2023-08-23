@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	version          = "1.6.3"
-	DefaultUserAgent = fmt.Sprintf("showwin/speedtest-go %s", version)
+	version          = "0.1.0"
+	DefaultUserAgent = fmt.Sprintf("speedtest-go %s", version)
 )
 
 // Speedtest is a speedtest client.

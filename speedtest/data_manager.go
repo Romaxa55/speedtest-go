@@ -92,7 +92,7 @@ type DataManager struct {
 func NewDataManager() *DataManager {
 	ret := &DataManager{
 		nThread:              runtime.NumCPU(),
-		captureTime:          time.Second * 10,
+		captureTime:          time.Second * 1,
 		rateCaptureFrequency: time.Millisecond * 100,
 	}
 	ret.dFn = &funcGroup{manager: ret}
