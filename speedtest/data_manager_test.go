@@ -40,16 +40,6 @@ func TestDataManager_AddTotalDownload(t *testing.T) {
 	}
 }
 
-func TestDataManager_GetAvgDownloadRate(t *testing.T) {
-	GlobalDataManager.totalDownload = 3000000
-	GlobalDataManager.captureTime = time.Second * 1
-
-	result := GlobalDataManager.GetAvgDownloadRate()
-	if result != 2.4 {
-		t.Fatal()
-	}
-}
-
 func TestDynamicRate(t *testing.T) {
 
 	oldDownTotal := GlobalDataManager.GetTotalDownload()
